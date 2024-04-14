@@ -18,7 +18,7 @@ pipe = pipe.to("cuda")
 pipe.safety_checker = None
 
 # Define the prompt for generating images
-prompt = "most beautiful indian girl in forest background, artgerm, artstation, octane render, elegant, model, gorgeous, vray, depth of field, 8 k, by karol bak, donato giancola, 3 d, trending on artstation, octane render, cinematic lighting, hyper realism, high detail, octane render, 8 k"
+prompt = "dog"
 
 # Set height and width for generated images
 h = 800
@@ -31,7 +31,7 @@ steps = 30
 guidance = 7.5
 
 # Negative prompt for image generation
-neg = "BadDream, FastNegativeV2"
+neg = "bad dog"
 
 # Number of images to generate
 num_images = 5
