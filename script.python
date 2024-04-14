@@ -3,9 +3,11 @@
 !pip install accelerate
 !pip install git+https://github.com/huggingface/diffusers
 
-# Import required libraries
+import os
 import torch
 from diffusers import StableDiffusionPipeline
+
+# Import required libraries
 from IPython.display import display
 
 # Load the diffusion model pipeline
@@ -18,7 +20,7 @@ pipe = pipe.to("cuda")
 pipe.safety_checker = None
 
 # Define the prompt for generating images
-prompt = "dog"
+prompt = "demo"
 
 # Set height and width for generated images
 h = 800
@@ -31,18 +33,28 @@ steps = 30
 guidance = 7.5
 
 # Negative prompt for image generation
-neg = "bad dog"
+neg = "demo"
 
 # Number of images to generate
 num_images = 5
 
-# Generate and display the images
-images = []
-for _ in range(num_images):
+# Create a directory to store the images if it doesn't exist
+output_dir = "generated_image"
+os.makedirs(output_dir, exist_ok=True)
+
+# Find the index of the last generated image
+existing_images = [f for f in os.listdir(output_dir) if f.endswith(".png")]
+if existing_images:
+    last_index = max(int(name.split("_")[1].split(".")[0]) for name in existing_images)
+else:
+    last_index = -1
+
+# Generate and save the images
+for i in range(last_index + 1, last_index + 1 + num_images):
     # Generate image using diffusion model pipeline
     image = pipe(prompt, height=h, width=w, num_inference_steps=steps, guidance_scale=guidance, negative_prompt=neg).images[0]
-    images.append(image)
+    
+    # Save the image
+    image_name = os.path.join(output_dir, f"image_{i}.png")
+    image.save(image_name)
 
-# Display generated images
-for img in images:
-    display(img)
