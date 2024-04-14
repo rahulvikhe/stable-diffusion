@@ -1,0 +1,54 @@
+import os
+import torch
+from diffusers import StableDiffusionPipeline
+
+# Import required libraries
+from IPython.display import display
+
+# Load the diffusion model pipeline
+pipe = StableDiffusionPipeline.from_pretrained("digiplay/AbsoluteReality_v1.8.1")
+
+# Move the model pipeline to CPU
+pipe = pipe.to("cpu")
+
+# Disable safety checker to speed up inference
+pipe.safety_checker = None
+
+# Define the prompt for generating images
+prompt = "cat"
+
+# Set height and width for generated images
+h = 800
+w = 480
+
+# Number of diffusion steps
+steps = 25
+
+# Guiding scale for the diffusion process
+guidance = 7.5
+
+# Negative prompt for image generation
+neg = "demo"
+
+# Number of images to generate
+num_images = 1
+
+# Create a directory to store the images if it doesn't exist
+output_dir = "generated_image"
+os.makedirs(output_dir, exist_ok=True)
+
+# Find the index of the last generated image
+existing_images = [f for f in os.listdir(output_dir) if f.endswith(".png")]
+if existing_images:
+    last_index = max(int(name.split("_")[1].split(".")[0]) for name in existing_images)
+else:
+    last_index = -1
+
+# Generate and save the images
+for i in range(last_index + 1, last_index + 1 + num_images):
+    # Generate image using diffusion model pipeline
+    image = pipe(prompt, height=h, width=w, num_inference_steps=steps, guidance_scale=guidance, negative_prompt=neg).images[0]
+    
+    # Save the image
+    image_name = os.path.join(output_dir, f"image_{i}.png")
+    image.save(image_name)
