@@ -6,15 +6,10 @@
 import os
 import torch
 from diffusers import StableDiffusionPipeline
-
-# Import required libraries
 from IPython.display import display
 
 # Load the diffusion model pipeline
-pipe = StableDiffusionPipeline.from_pretrained("digiplay/majicMIX_realistic_v6", torch_dtype=torch.float16)
-
-# Move the model pipeline to GPU if available
-pipe = pipe.to("cuda")
+pipe = StableDiffusionPipeline.from_pretrained("digiplay/majicMIX_realistic_v6", torch_dtype=torch.float16).to("cuda")
 
 # Disable safety checker to speed up inference
 pipe.safety_checker = None
@@ -23,8 +18,7 @@ pipe.safety_checker = None
 prompt = "demo"
 
 # Set height and width for generated images
-h = 800
-w = 480
+h, w = 800, 480
 
 # Number of diffusion steps
 steps = 30
@@ -44,10 +38,7 @@ os.makedirs(output_dir, exist_ok=True)
 
 # Find the index of the last generated image
 existing_images = [f for f in os.listdir(output_dir) if f.endswith(".png")]
-if existing_images:
-    last_index = max(int(name.split("_")[1].split(".")[0]) for name in existing_images)
-else:
-    last_index = -1
+last_index = max([int(name.split("_")[1].split(".")[0]) for name in existing_images], default=-1)
 
 # Generate and save the images
 for i in range(last_index + 1, last_index + 1 + num_images):
@@ -57,4 +48,3 @@ for i in range(last_index + 1, last_index + 1 + num_images):
     # Save the image
     image_name = os.path.join(output_dir, f"image_{i}.png")
     image.save(image_name)
-
